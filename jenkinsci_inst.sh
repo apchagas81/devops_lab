@@ -9,11 +9,9 @@ sudo mkdir -p $docker_dir
 sudo chown -R labuser.labuser $docker_dir
 #--------------------------------------------------------------------------------------------------------------------------
 cd $docker_dir
-# wget https://rfm2oregon.s3-us-west-2.amazonaws.com/jdk-8u221-linux-x64.tar.gz
-# wget http://mirrors.jenkins.io/war-stable/latest/jenkins.war
-# wget https://rfm2oregon.s3-us-west-2.amazonaws.com/startjks.sh
-# tar zxvf jdk-8u221-linux-x64.tar.gz -C /opt/app
-#cp jenkins.war /opt/app/jenkins
+wget https://rfm2oregon.s3-us-west-2.amazonaws.com/jdk-8u221-linux-x64.tar.gz
+wget http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+wget https://rfm2oregon.s3-us-west-2.amazonaws.com/startjks.sh
 echo "building a docker container....   "
 sudo docker build -t vm-lab-jks-$now $docker_dir
 echo "Running the first container after provision process..... "
