@@ -1,0 +1,37 @@
+FROM centos:7
+#Dockerfile for Tomcat Server container creation
+MAINTAINER André Pereira César Chagas - alm2.servicos.ti@gmail.com
+# updating centos packages and installing needed dependencies
+
+RUN yum -y update && \
+yum -y install unzip wget net-tools vim git && \
+yum clean all
+#Sending needed depedencies into the container
+
+COPY apache-tomcat-8.5.53.zip /tmp
+COPY jdk-8u241-linux-x64.tar.gz /tmp
+COPY startappsrv.sh /usr/local/bin
+COPY tcat_bash_profile /tmp
+COPY tomcat-users.xml /tmp
+COPY context.xml /tmp
+RUN chmod +x /usr/local/bin/startappsrv.sh
+#
+# Configuring TOMCAT Server
+RUN mkdir -p /opt/app
+RUN cd /tmp && tar zxvf jdk-8u241-linux-x64.tar.gz -C /opt/app
+RUN chmod +x /opt/app/jdk1*/bin*
+RUN chmod +x /opt/app/jdk1*/jre/bin*
+RUN cd /tmp && unzip apache-tomcat-8.5.53.zip -d /opt/app && mv /opt/app/apache-tomcat-8.5.53 /opt/app/apache-tomcat
+RUN chmod +x /opt/app/apache-tomcat/bin/*
+ENV JAVA_HOME /opt/app/jdk1.8.0_241
+ENV CATALINA_HOME /opt/app/apache-tomcat
+ENV PATH $JAVA_HOME/bin:$CATALINA_HOME/bin:$PATH
+RUN cd /tmp && mv tomcat-users.xml $CATALINA_HOME/conf
+RUN cd /tmp && mv context.xml $CATALINA_HOME/webapps/manager/META-INF
+# Exposing at least HTTP and JENKINS Application ports for this profile
+EXPOSE 80 8080
+ENV HOME /root
+WORKDIR /root
+CMD /bin/bash
+RUN echo "To start a Tomcat Server instance, run startup.sh and configure it !!!"
+# End of file

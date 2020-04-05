@@ -1,0 +1,38 @@
+FROM centos:7
+#Dockerfile for Jenkins container creation
+MAINTAINER André CHAGAS - alm2.servicos.ti@gmail.com | apchagas81@gmail.com | +55 11 976034663
+# Updating centos packages and installing needed dependencies
+
+RUN yum -y update && \
+yum -y install unzip wget net-tools vim git && \
+yum clean all
+
+#Sending needed depedencies into the container
+COPY jdk-8u241-linux-x64.tar.gz /tmp 
+COPY apache-maven-3.6.3-bin.zip /tmp 
+COPY jenkins.war /tmp
+COPY startjks.sh /usr/local/bin
+COPY jks_bash_profile /tmp
+RUN chmod +x /usr/local/bin/startjks.sh
+
+# Configuring JAVA and JENKINS
+RUN mkdir -p /opt/app
+RUN cd /tmp && mv jks_bash_profile ~/.bash_profile
+RUN cd /tmp && tar zxvf jdk-8u241-linux-x64.tar.gz -C /opt/app
+RUN chmod +x /opt/app/jdk1*/bin*
+RUN chmod +x /opt/app/jdk1*/jre/bin*
+RUN cd /tmp && unzip apache-maven-3.6.3-bin.zip -d /opt/app && mv /opt/app/apache-maven-3.6.3 /opt/app/apache-maven
+RUN chmod +x /opt/app/apache-maven/bin/*
+RUN mkdir -p /opt/app/jenkins-ci
+RUN cd /tmp && mv jenkins.war /opt/app/jenkins-ci
+RUN chmod +x /etc/profile.d/*
+
+# Cleaning temporary folder
+# Exposing at least HTTP and JENKINS Application ports for this profile
+EXPOSE 80 8080
+ENV HOME /root
+WORKDIR /root
+CMD /bin/bash
+RUN cd /tmp && rm -rf *
+RUN echo "To start a jenkins instance, run startjks.sh and configure it !!!"
+# End of file
